@@ -1,5 +1,5 @@
-#
-
+# nginx conf
+```bash
 server {
     listen 8877 ssl;
     server_name domain;
@@ -47,18 +47,22 @@ server {
         add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization';
     }
 }
-
-#
-
+```
+# cron
+```bash
 crontab -e
 * * * * * php /var/www/webinar/artisan schedule:run >> /dev/null 2>&1
+```
 
+# install rtmp
 
-# 
-
+```bash
 sudo apt install libnginx-mod-rtmp -y
 nginx -V 2>&1 | grep --color=auto rtmp
+```
 
 # команда запуска стрима
 
+```bash
 ffmpeg -re -i /path/to/sample.mp4 -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -vf "scale=1280:720" -g 60 -c:a aac -b:a 128k -ac 2 -f flv rtmp://localhost/live/stream
+```
