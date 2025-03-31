@@ -66,3 +66,13 @@ nginx -V 2>&1 | grep --color=auto rtmp
 ```bash
 ffmpeg -re -i /path/to/sample.mp4 -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -vf "scale=1280:720" -g 60 -c:a aac -b:a 128k -ac 2 -f flv rtmp://localhost/live/stream
 ```
+
+# php 
+```bash
+PHP 8.2.28 (cli) (built: Mar 13 2025 18:13:24) (NTS)
+```
+
+# laravel 
+```bash
+Laravel Framework 10.48.29
+```
