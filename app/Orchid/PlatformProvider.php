@@ -38,6 +38,10 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bs.book')
                 ->title('Navigation')
                 ->route(config('platform.index')),
+                
+            Menu::make('Настройки')
+                ->icon('bs.window-sidebar')
+                ->route('platform.setting'),
 
             Menu::make('Sample Screen')
                 ->icon('bs.collection')
