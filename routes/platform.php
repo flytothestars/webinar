@@ -12,7 +12,8 @@ use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
 
-use App\Orchid\Screens\Setting\SettingScreen;
+use App\Orchid\Screens\Webinar\WebinarScreen;
+use App\Orchid\Screens\Webinar\WebinarEditScreen;
 
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
@@ -22,7 +23,6 @@ use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
-
 /*
 |--------------------------------------------------------------------------
 | Dashboard Routes
@@ -94,11 +94,27 @@ Route::screen('example', ExampleScreen::class)
         ->parent('platform.index')
         ->push('Example Screen'));
 
-Route::screen('setting', SettingScreen::class)
-    ->name('platform.setting')
+// Webinar
+Route::screen('webinar', WebinarScreen::class)
+    ->name('platform.webinar')
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->parent('platform.index')
-        ->push('Настройки'));
+        ->push('Вебинар'));
+
+// Webinar -> create
+Route::screen('webinar/create', WebinarEditScreen::class)
+    ->name('platform.webinar.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.webinar')
+        ->push(__('Создать'), route('platform.webinar.create')));
+
+// Webinar -> edit
+Route::screen('webinar/{webinar}/edit', WebinarEditScreen::class)
+    ->name('platform.webinar.edit')
+    ->breadcrumbs(fn (Trail $trail, $webinar) => $trail
+        ->parent('platform.webinar')
+        ->push($webinar->title, route('platform.webinar.edit', $webinar)));
+
 
 Route::screen('/examples/form/fields', ExampleFieldsScreen::class)->name('platform.example.fields');
 Route::screen('/examples/form/advanced', ExampleFieldsAdvancedScreen::class)->name('platform.example.advanced');

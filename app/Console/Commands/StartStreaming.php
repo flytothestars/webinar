@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Models\Setting;
-use App\Enum\StatusEnum;
+use App\Models\Webinar;
+use App\Enums\StatusEnum;
 
 class StartStreaming extends Command
 {
@@ -17,26 +17,38 @@ class StartStreaming extends Command
     {
         $currentTime = now()->format('H:i');
         
-        // Определяем время для проверки до и после (19:29 и 19:31, например)
         $timeBefore = now()->subMinute()->format('H:i');  // 1 минута до
         $timeAfter = now()->addMinute()->format('H:i');   // 1 минута после
 
-        // Получаем все опубликованные настройки
-        $settings = Setting::where('status', StatusEnum::PUBLISHED)->get();
+        // $webinars = Webinar::where('status', StatusEnum::PUBLISHED)->get();
         
-        foreach ($settings as $setting) {
-            // Получаем время старта из настроек
-            $startTime = $setting->start_time;
+        // foreach ($webinars as $webinar) {
+        //     $startTime = $webinar->start_time;
 
-            // Проверяем, если текущее время находится между timeBefore и timeAfter
-            if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
-                Log::info("Checking stream for {$startTime}...");
+        //     if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
+        //         Log::info("Checking stream for {$startTime}...");
                 
-                // Запуск видео стрима
-                $this->startStream();
-            }
+        //         if($this->startStream()) {
+        //             $webinar->update(['status' => StatusEnum::STARTED]);
+        //         }
+        //     }
+        // }
+        // $videoFilePath = '/path/to/video/source';
+        $output = [];
+        $statusCode = null;
+        $command = 'echo "Hello World"'; 
+        // $command = "ffmpeg -i {$videoFilePath} -c:v libx264 -f flv rtmp://streaming/server";
+        // Используем exec для получения кода статуса
+        exec($command, $output, $statusCode);
+        Log::info($output);
+        if ($statusCode === 0) {
+            Log::info('Video stream started successfully.');
+            return true;
+        } else {
+            // Если команда завершилась с ошибкой, логируем вывод и возвращаем false
+            Log::error('Ошибка запуска стрима: ' . implode("\n", $output));
+            return false;
         }
-
         // $videoPath = storage_path('app/public/sample.mp4');  // Путь к видео в проекте
         // $rtmpUrl = "rtmp://185.146.3.39:1935/live/stream";
 

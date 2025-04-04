@@ -39,9 +39,9 @@ class PlatformProvider extends OrchidServiceProvider
                 ->title('Navigation')
                 ->route(config('platform.index')),
                 
-            Menu::make('Настройки')
+            Menu::make('Вебинар')
                 ->icon('bs.window-sidebar')
-                ->route('platform.setting'),
+                ->route('platform.webinar'),
 
             Menu::make('Sample Screen')
                 ->icon('bs.collection')

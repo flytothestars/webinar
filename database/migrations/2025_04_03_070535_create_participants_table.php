@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('participants', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->comment('Имя участника');
+            $table->string('phone')->comment('Телефон');
+            $table->boolean('is_paid')->default(false)->comment('Оплачено ли участие');
+            $table->foreignId('webinar_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
