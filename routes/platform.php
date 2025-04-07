@@ -11,10 +11,6 @@ use App\Orchid\Screens\Examples\ExampleGridScreen;
 use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
-
-use App\Orchid\Screens\Webinar\WebinarScreen;
-use App\Orchid\Screens\Webinar\WebinarEditScreen;
-
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -23,6 +19,11 @@ use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
+
+
+use App\Orchid\Screens\Webinar\WebinarScreen;
+use App\Orchid\Screens\Webinar\WebinarEditScreen;
+use App\Orchid\Screens\Participant\ParticipantScreen;
 /*
 |--------------------------------------------------------------------------
 | Dashboard Routes
@@ -94,6 +95,27 @@ Route::screen('example', ExampleScreen::class)
         ->parent('platform.index')
         ->push('Example Screen'));
 
+Route::screen('/examples/form/fields', ExampleFieldsScreen::class)->name('platform.example.fields');
+Route::screen('/examples/form/advanced', ExampleFieldsAdvancedScreen::class)->name('platform.example.advanced');
+Route::screen('/examples/form/editors', ExampleTextEditorsScreen::class)->name('platform.example.editors');
+Route::screen('/examples/form/actions', ExampleActionsScreen::class)->name('platform.example.actions');
+
+Route::screen('/examples/layouts', ExampleLayoutsScreen::class)->name('platform.example.layouts');
+Route::screen('/examples/grid', ExampleGridScreen::class)->name('platform.example.grid');
+Route::screen('/examples/charts', ExampleChartsScreen::class)->name('platform.example.charts');
+Route::screen('/examples/cards', ExampleCardsScreen::class)->name('platform.example.cards');
+
+// Route::screen('idea', Idea::class, 'platform.screens.idea');
+
+//  ===============================================
+
+// Participant
+Route::screen('participant', ParticipantScreen::class)
+->name('platform.participant')
+->breadcrumbs(fn (Trail $trail) => $trail
+    ->parent('platform.index')
+    ->push('Участники'));
+
 // Webinar
 Route::screen('webinar', WebinarScreen::class)
     ->name('platform.webinar')
@@ -114,16 +136,3 @@ Route::screen('webinar/{webinar}/edit', WebinarEditScreen::class)
     ->breadcrumbs(fn (Trail $trail, $webinar) => $trail
         ->parent('platform.webinar')
         ->push($webinar->title, route('platform.webinar.edit', $webinar)));
-
-
-Route::screen('/examples/form/fields', ExampleFieldsScreen::class)->name('platform.example.fields');
-Route::screen('/examples/form/advanced', ExampleFieldsAdvancedScreen::class)->name('platform.example.advanced');
-Route::screen('/examples/form/editors', ExampleTextEditorsScreen::class)->name('platform.example.editors');
-Route::screen('/examples/form/actions', ExampleActionsScreen::class)->name('platform.example.actions');
-
-Route::screen('/examples/layouts', ExampleLayoutsScreen::class)->name('platform.example.layouts');
-Route::screen('/examples/grid', ExampleGridScreen::class)->name('platform.example.grid');
-Route::screen('/examples/charts', ExampleChartsScreen::class)->name('platform.example.charts');
-Route::screen('/examples/cards', ExampleCardsScreen::class)->name('platform.example.cards');
-
-// Route::screen('idea', Idea::class, 'platform.screens.idea');

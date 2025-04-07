@@ -43,6 +43,10 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bs.window-sidebar')
                 ->route('platform.webinar'),
 
+            Menu::make('Участники')
+                ->icon('bs.window-sidebar')
+                ->route('platform.participant'),
+
             Menu::make('Sample Screen')
                 ->icon('bs.collection')
                 ->route('platform.example')

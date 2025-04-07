@@ -9,4 +9,10 @@ use Orchid\Screen\AsSource;
 class Participant extends Model
 {
     use HasFactory, AsSource;
+
+    protected $fillable = [
+        'name',
+        'phone',
+        'created_at'
+    ];
 }
