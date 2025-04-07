@@ -40,7 +40,6 @@ class WebinarScreen extends Screen
     public function commandBar(): iterable
     {
         return [
-            // ModalToggle::make('Создать')->modal('createWebinar')->method('createOrUpdateWebinar')
             Link::make(__('Создать'))
                 ->icon('bs.plus-circle')
                 ->route('platform.webinar.create'),
@@ -56,29 +55,6 @@ class WebinarScreen extends Screen
     {
         return [
             WebinarListLayout::class
-        ];
-    }
-
-    public function createOrUpdateWebinar(WebinarRequest $request )
-    {
-        $validated = $request->validated();
-        
-        $webinarId = $request->input('webinar.id');
-        $webinar = Webinar::updateOrCreate([
-            'id' => $webinarId
-        ], $validated['webinar']);
-        $webinar->attachments()->syncWithoutDetaching(
-            $request->input('webinar.attachments', [])
-        );
-        is_null($webinarId) ? Toast::info('Успешно добавлено') : Toast::info('Успешно обновлено');
-
-    }
-
-    public function asyncGetWebinar(Webinar $webinar): array
-    {
-        $webinar->load('attachments');
-        return [
-            'webinar' => $webinar
         ];
     }
 

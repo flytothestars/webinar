@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StreamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/stream', function () {
-    return view('stream');
-});
+// Route::get('/stream', function () {
+//     return view('stream');
+// });
+
+Route::get('/webinar/stream/{webinar_id}', [StreamController::class, 'index'])->name('webinar.stream');

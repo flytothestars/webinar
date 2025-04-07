@@ -13,6 +13,7 @@ class Participant extends Model
     protected $fillable = [
         'name',
         'phone',
+        'webinar_id',
         'created_at'
     ];
 }

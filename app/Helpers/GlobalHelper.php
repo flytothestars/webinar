@@ -32,6 +32,9 @@ trait GlobalHelper
         $path = '/webinar/stream/';
         $randomId = $this->generateUUID();
         $videoUrl = "https://{$domain}{$path}{$randomId}";
-        return $videoUrl;   
+        return [
+            'video_url' => $videoUrl,
+            'uuid' => $randomId   
+        ];   
     }
 }

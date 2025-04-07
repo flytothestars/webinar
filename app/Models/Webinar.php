@@ -15,6 +15,7 @@ class Webinar extends Model
         'description',
         'video_url',
         'rtmp_url',
+        'uuid',
         'date',
         'time',
         'status',

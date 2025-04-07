@@ -111,8 +111,10 @@ class WebinarEditScreen extends Screen
         Toast::info(__('Сохранено'));
         
         $webinar->fill($request->collect('webinar')->toArray());
-        $webinar->video_url = $this->generateUrl();
-        $webinar->rtmp_url = $this->generateUrl();
+        $video = $this->generateUrl();
+        $webinar->video_url = $video['video_url'];
+        $webinar->uuid = $video['uuid'];
+        $webinar->rtmp_url = 'rtmp_url';
         $webinar->save();
         return redirect()->route('platform.webinar');
     }
