@@ -25,15 +25,18 @@ class StartStreaming extends Command
         foreach ($webinars as $webinar) {
             $startTime = $webinar->time;
             $startDate = $webinar->date;
-            if($currentDate === $startDate)
-            {
-                // if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
-                    Log::info("Checking stream for {$startTime}...");
-                    
-                    if($this->startStream($webinar->attachment('webinarVideo')->first())) {
-                        // $webinar->update(['status' => StatusEnum::STARTED]);
-                    }
-                // }
+            if ($webinar->status !== StatusEnum::STARTED->value) {
+                if($currentDate === $startDate)
+                {
+                    // if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
+                        Log::info("Checking stream for {$startTime}...");
+                        
+                        $webinar->update(['status' => StatusEnum::STARTED]);
+                        Log::info("Video stream started for webinar {$webinar->id}");
+                        $this->startStream($webinar);
+                        
+                    // }
+                }
             }
         }
 
@@ -41,25 +44,60 @@ class StartStreaming extends Command
         $this->info('Streaming started.');
     }
 
-    private function startStream($file)
+    private function startStream($webinar)
     {
+        $file = $webinar->attachment('webinarVideo')->first();
         $path = storage_path('app/public/' . $file->path . $file->name . '.' . $file->extension);
-        $pathHls = '/var/www/hls/' . $file->name . '/' . $file->name . '.m3u8';
+        $pathHls = '/var/www/webinar/hls/' . $file->name;
+        
+        if (!file_exists($pathHls)) {
+            mkdir($pathHls, 0755, true);
+        }
+    
+        $hlsFile = $pathHls . '/' . $file->name . '.m3u8';
+        
+        
+        
         $output = [];
         $statusCode = null;
         
-        $command = "ffmpeg -re -i $path -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -vf 'scale=1280:720' -g 60 -c:a aac -b:a 128k -ac 2 -f hls -hls_time 5 -hls_list_size 10 -hls_flags delete_segments $pathHls"; 
+        $command = "ffmpeg -re -i $path -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -vf 'scale=1280:720' -g 60 -c:a aac -b:a 128k -ac 2 -f hls -hls_time 5 -hls_list_size 10 -hls_flags delete_segments $hlsFile"; 
         
         exec($command, $output, $statusCode);
         Log::info($output);
         if ($statusCode === 0) {
-            Log::info('Video stream started successfully.');
+            Log::info('Video stream finished successfully.');
+            $webinar->update(['status' => StatusEnum::FINISHED]);
+            // deleteDirectory($pathHls);
             return true;
         } else {
             Log::error('Ошибка запуска стрима: ' . implode("\n", $output));
             return false;
         }
     }
+
+    private function deleteDirectory($dirPath) {
+        if (!is_dir($dirPath)) {
+            return false;
+        }
+
+        $files = array_diff(scandir($dirPath), array('.', '..'));
+
+        foreach ($files as $file) {
+            $filePath = $dirPath . DIRECTORY_SEPARATOR . $file;
+            if (is_file($filePath)) {
+                unlink($filePath);
+            }
+            elseif (is_dir($filePath)) {
+                deleteDirectory($filePath);
+            }
+        }
+
+        rmdir($dirPath);
+
+        return true;
+    }
+
 }
 
 

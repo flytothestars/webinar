@@ -11,7 +11,7 @@ class StreamController extends Controller
     public function index($webinar_id)
     {
         $status = Webinar::where('uuid', $webinar_id)->pluck('status')->first();
-        if($status == StatusEnum::PUBLISHED->value){
+        if($status == StatusEnum::PUBLISHED->value || $status == StatusEnum::STARTED->value){
             return view('index', ['webinar_id' => $webinar_id]);
         }
 

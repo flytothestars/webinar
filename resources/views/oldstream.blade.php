@@ -16,7 +16,6 @@
     <video id="player" class="video-js vjs-default-skin" height="360" width="640" preload="auto" controls autoplay muted disablePictureInPicture>
         <source src="https://testbilimzet.kz:8877/hls/stream.m3u8" type="application/x-mpegURL"/>
     </video>
- <h1>ali</h1>
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
         var player = videojs('#player', {

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Participant;
 use App\Models\Webinar;
+use App\Enums\StatusEnum;
 
 class Stream extends Component
 {
@@ -12,12 +13,26 @@ class Stream extends Component
     public $phone = '';
     public $registered = false;
     public $webinarId;
+    public $isLive = false;
+
+    // Video info
+    public $video_uuid = '';
+    public $video_name = '';
 
     public function mount($webinar_id)
     {
         $this->webinarId = $webinar_id;
         $cookieKey = 'webinar_user_' . $this->webinarId;
-        $this->registered = request()->cookie($cookieKey) === '1';    }
+        $this->registered = request()->cookie($cookieKey) === '1';
+
+        $webinar = Webinar::where('uuid', $this->webinarId)->first();
+        $file = $webinar->attachment('webinarVideo')->first();
+        $this->video_uuid = $file->name;
+        $this->video_name = $webinar->title;
+
+        $this->checkStreamStatus();
+
+    }
 
     public function register()
     {
@@ -42,5 +57,16 @@ class Stream extends Component
     public function render()
     {
         return view('livewire.stream')->layout('index');
+    }
+
+    public function checkStreamStatus()
+    {
+        $webinar = Webinar::where('uuid', $this->webinarId)->first();
+
+        if ($webinar) {
+            $this->isLive = true;
+        } else {
+            $this->isLive = false;
+        }
     }
 }
