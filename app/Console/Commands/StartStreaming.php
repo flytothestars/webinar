@@ -16,39 +16,30 @@ class StartStreaming extends Command
     public function handle()
     {
         $currentTime = now()->format('H:i');
-        
+        $currentDate = now()->format('Y-m-d');
+
         $timeBefore = now()->subMinute()->format('H:i');  // 1 минута до
         $timeAfter = now()->addMinute()->format('H:i');   // 1 минута после
 
-        // $webinars = Webinar::where('status', StatusEnum::PUBLISHED)->get();
-        
-        // foreach ($webinars as $webinar) {
-        //     $startTime = $webinar->start_time;
-
-        //     if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
-        //         Log::info("Checking stream for {$startTime}...");
-                
-        //         if($this->startStream()) {
-        //             $webinar->update(['status' => StatusEnum::STARTED]);
-        //         }
-        //     }
-        // }
+        $webinars = Webinar::where('status', StatusEnum::PUBLISHED->value)->get();
+        foreach ($webinars as $webinar) {
+            $startTime = $webinar->time;
+            $startDate = $webinar->date;
+            if($currentDate === $startDate)
+            {
+                if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
+                    Log::info("Checking stream for {$startTime}...");
+                    
+                    if($this->startStream()) {
+                        $webinar->update(['status' => StatusEnum::STARTED]);
+                    }
+                }
+            }
+        }
         // $videoFilePath = '/path/to/video/source';
-        $output = [];
-        $statusCode = null;
-        $command = 'echo "Hello World"'; 
         // $command = "ffmpeg -i {$videoFilePath} -c:v libx264 -f flv rtmp://streaming/server";
         // Используем exec для получения кода статуса
-        exec($command, $output, $statusCode);
-        Log::info($output);
-        if ($statusCode === 0) {
-            Log::info('Video stream started successfully.');
-            return true;
-        } else {
-            // Если команда завершилась с ошибкой, логируем вывод и возвращаем false
-            Log::error('Ошибка запуска стрима: ' . implode("\n", $output));
-            return false;
-        }
+       
         // $videoPath = storage_path('app/public/sample.mp4');  // Путь к видео в проекте
         // $rtmpUrl = "rtmp://185.146.3.39:1935/live/stream";
 
@@ -70,11 +61,24 @@ class StartStreaming extends Command
     private function startStream()
     {
         // Команда для запуска видео стрима через ffmpeg
-        $command = "ffmpeg -i /path/to/video/source -c:v libx264 -f flv rtmp://streaming/server";
+        // $command = "ffmpeg -i /path/to/video/source -c:v libx264 -f flv rtmp://streaming/server";
         
         // Выполнение команды
-        shell_exec($command);
-
+        // shell_exec($command);
+        $output = [];
+        $statusCode = null;
+        $command = 'echo "Hello World"'; 
+        
+        exec($command, $output, $statusCode);
+        Log::info($output);
+        if ($statusCode === 0) {
+            Log::info('Video stream started successfully.');
+            return true;
+        } else {
+            // Если команда завершилась с ошибкой, логируем вывод и возвращаем false
+            Log::error('Ошибка запуска стрима: ' . implode("\n", $output));
+            return false;
+        }
         // Логирование
         Log::info('Video stream started successfully.');
     }
