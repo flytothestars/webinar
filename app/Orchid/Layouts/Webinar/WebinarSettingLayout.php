@@ -43,10 +43,10 @@ class WebinarSettingLayout extends Rows
                 ->placeholder('HH:MM:SS')
                 ->horizontal(),
 
-            // Upload::make('webinar.attachments')
-            //     ->title('Видео файл')
-            //     ->groups('webinarVideo')
-            //     ->required(),
+            Upload::make('webinar.attachments')
+                ->title('Видео файл')
+                ->groups('webinarVideo')
+                ->required(),
 
 
             Relation::make('webinar.status')

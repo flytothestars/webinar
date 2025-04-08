@@ -116,6 +116,9 @@ class WebinarEditScreen extends Screen
         $webinar->uuid = $video['uuid'];
         $webinar->rtmp_url = 'rtmp_url';
         $webinar->save();
+        $webinar->attachments()->syncWithoutDetaching(
+            $request->input('webinar.attachments', [])
+        );
         return redirect()->route('platform.webinar');
     }
 
