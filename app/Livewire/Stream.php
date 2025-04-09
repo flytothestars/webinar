@@ -63,7 +63,7 @@ class Stream extends Component
     {
         $webinar = Webinar::where('uuid', $this->webinarId)->first();
 
-        if ($webinar) {
+        if ($webinar && $webinar->status == StatusEnum::STARTED->value) {
             $this->isLive = true;
         } else {
             $this->isLive = false;

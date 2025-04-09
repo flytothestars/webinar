@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\Webinar;
 use App\Enums\StatusEnum;
+use Illuminate\Support\Facades\File;
 
 class StartStreaming extends Command
 {
@@ -28,20 +29,18 @@ class StartStreaming extends Command
             if ($webinar->status !== StatusEnum::STARTED->value) {
                 if($currentDate === $startDate)
                 {
-                    // if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
+                    if ($currentTime === $startTime || $timeBefore === $startTime || $timeAfter === $startTime) {
                         Log::info("Checking stream for {$startTime}...");
                         
                         $webinar->update(['status' => StatusEnum::STARTED]);
                         Log::info("Video stream started for webinar {$webinar->id}");
-                        $this->startStream($webinar);
-                        
-                    // }
+                        $this->startStream($webinar); 
+                        Log::info('Video stream end successfully.');
+                        $this->info('Streaming end.');
+                    }
                 }
             }
         }
-
-        Log::info('Video stream started successfully.');
-        $this->info('Streaming started.');
     }
 
     private function startStream($webinar)
@@ -56,19 +55,18 @@ class StartStreaming extends Command
     
         $hlsFile = $pathHls . '/' . $file->name . '.m3u8';
         
-        
-        
         $output = [];
         $statusCode = null;
         
         $command = "ffmpeg -re -i $path -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -vf 'scale=1280:720' -g 60 -c:a aac -b:a 128k -ac 2 -f hls -hls_time 5 -hls_list_size 10 -hls_flags delete_segments $hlsFile"; 
         
         exec($command, $output, $statusCode);
+
         Log::info($output);
         if ($statusCode === 0) {
             Log::info('Video stream finished successfully.');
             $webinar->update(['status' => StatusEnum::FINISHED]);
-            // deleteDirectory($pathHls);
+            $this->deleteDirectory($file->name);
             return true;
         } else {
             Log::error('Ошибка запуска стрима: ' . implode("\n", $output));
@@ -76,26 +74,16 @@ class StartStreaming extends Command
         }
     }
 
-    private function deleteDirectory($dirPath) {
-        if (!is_dir($dirPath)) {
+    private function deleteDirectory($uuid) {
+        $folderPath = base_path("hls/$uuid");
+
+        if (File::exists($folderPath)) {
+            File::deleteDirectory($folderPath);
+            Log::info('deleted');
+            return true;
+        } else {
             return false;
         }
-
-        $files = array_diff(scandir($dirPath), array('.', '..'));
-
-        foreach ($files as $file) {
-            $filePath = $dirPath . DIRECTORY_SEPARATOR . $file;
-            if (is_file($filePath)) {
-                unlink($filePath);
-            }
-            elseif (is_dir($filePath)) {
-                deleteDirectory($filePath);
-            }
-        }
-
-        rmdir($dirPath);
-
-        return true;
     }
 
 }

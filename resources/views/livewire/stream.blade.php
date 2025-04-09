@@ -13,12 +13,15 @@
             </form>
         </div>
     @else
-        <div class="w-full max-w-4xl mt-6">
-            <h2>{{$video_name}}</h2>
-            <video id="player" class="video-js vjs-default-skin rounded-xl shadow-xl w-full h-[450px]" height="360" width="640" preload="auto" controls autoplay muted disablePictureInPicture>
-                <source src="http://80.242.213.87/hls/{{$video_uuid}}/{{$video_uuid}}.m3u8" type="application/x-mpegURL"/>
-            </video>
-            <p id="thank-you-message" class="hidden text-center text-lg mt-4">Спасибо за внимание!</p>
+        <div wire:poll.1s="checkStreamStatus" class="w-full max-w-4xl mt-6">
+            @if($isLive)
+                <h2>{{$video_name}}</h2>
+                <div class="text-green-600 font-bold">Стрим в эфире!</div>
+                <video id="video" autoplay muted playsinline></video>
+
+            @else
+                <p id="thank-you-message" class="text-center text-lg mt-4">Спасибо за внимание!</p>
+            @endif
         </div>
         <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
         <script>
@@ -40,16 +43,24 @@
                     player.play();
                 }
             });
-
-            // Когда видео закончится, показать текст "Спасибо за внимание"
-            player.on('ended', function() {
-                // Останавливаем плеер
-                player.pause();
-                // Скрываем плеер
-                document.getElementById('video-container').innerHTML = '';
-                // Показываем текст
-                document.getElementById('thank-you-message').classList.remove('hidden');
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+        <script>
+        if (Hls.isSupported()) {
+            var video = document.getElementById('video');
+            var hls = new Hls();
+            hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+            console.log('video and hls.js are now bound together !');
             });
+            hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            console.log(
+                'manifest loaded, found ' + data.levels.length + ' quality level',
+            );
+            });
+            hls.loadSource('http://80.242.213.87/hls/{{ $video_uuid }}/{{ $video_uuid }}.m3u8');
+            // bind them together
+            hls.attachMedia(video);
+        }
         </script>
     @endif
 </div>
